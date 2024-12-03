@@ -85,7 +85,6 @@ export const createNFT = async (
   transaction.feePayer = wallet.publicKey;
   transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
   transaction.partialSign(mintKeypair);
-
   console.log(transaction)
 
   const associatedToken = getAssociatedTokenAddressSync(
@@ -105,6 +104,7 @@ export const createNFT = async (
     ),
   );
   await wallet.sendTransaction(transaction2, connection);
+  
 
   const transaction3 = new Transaction().add(
     createMintToInstruction(mintKeypair.publicKey, associatedToken, wallet.publicKey, supply, [], TOKEN_2022_PROGRAM_ID)
