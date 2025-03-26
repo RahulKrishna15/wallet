@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 import {
   WalletMultiButton,
@@ -15,6 +15,8 @@ export default function CreateNFTForm() {
   const [imageUrl, setImageUrl] = useState("");
   const [symbol, setSymbol] = useState("");
   const [supply, setSupply] = useState("");
+  const sign = useRef("");
+  const success = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +33,9 @@ export default function CreateNFTForm() {
         imageUrl,
         supplyNumber
       );
+      sign.current = signature;
       console.log("Transaction Signature:", signature);
+      success.current = true;
       toast.success("Transaction Successfull");
     } catch (error) {
       console.error("Error creating NFT:", error);
@@ -157,6 +161,20 @@ export default function CreateNFTForm() {
           >
             Create NFT
           </button>
+          {success.current && (
+            <div>
+              <h2 className="text-green-600">Transaction Successful</h2>
+              <h2 className="font-semibold underline">
+                <a
+                  href={`https://explorer.solana.com/tx/${sign.current}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Click To View The Transaction Details
+                </a>
+              </h2>
+            </div>
+          )}
         </form>
       </div>
       <ToastContainer position="bottom-right" />

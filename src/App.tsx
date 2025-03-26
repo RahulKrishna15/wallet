@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './App.css'
 import BalanceCard from './components/Balance/BalanceCard'
 import { VarContextProvider } from "./context/VarContext";
@@ -13,11 +13,13 @@ function App() {
   const wallet = useWallet();
   const [activeSection, setActiveSection] = useState('balance');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isInitialLoad = useRef(true);
   
   useEffect(()=>{
     if (wallet.connected) {
+      isInitialLoad.current = false;
       toast.success("Wallet Connected!");
-    } else {
+    } else if (!isInitialLoad.current) {
       toast.error("Wallet Disconnected!");
     }
   },[wallet.connected])

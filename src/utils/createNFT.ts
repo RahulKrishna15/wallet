@@ -2,6 +2,7 @@ import {
   clusterApiUrl,
   Connection,
   Keypair,
+  LAMPORTS_PER_SOL,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
@@ -81,11 +82,11 @@ export const createNFT = async (
       updateAuthority: wallet.publicKey,
     })
   );
-  console.log(transaction)
-  transaction.feePayer = wallet.publicKey;
-  transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  transaction.partialSign(mintKeypair);
-  console.log(transaction)
+  // console.log(transaction)
+  // transaction.feePayer = wallet.publicKey;
+  // transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+  // transaction.partialSign(mintKeypair);
+  // console.log(transaction)
 
   const associatedToken = getAssociatedTokenAddressSync(
     mintKeypair.publicKey,
@@ -94,7 +95,7 @@ export const createNFT = async (
     TOKEN_2022_PROGRAM_ID,
   );
 
-  const transaction2 = new Transaction().add(
+  transaction.add(
     createAssociatedTokenAccountInstruction(
       wallet.publicKey,
       associatedToken,
@@ -103,13 +104,16 @@ export const createNFT = async (
       TOKEN_2022_PROGRAM_ID,
     ),
   );
-  await wallet.sendTransaction(transaction2, connection);
-  
-
-  const transaction3 = new Transaction().add(
-    createMintToInstruction(mintKeypair.publicKey, associatedToken, wallet.publicKey, supply, [], TOKEN_2022_PROGRAM_ID)
+  transaction.add(
+    createMintToInstruction(mintKeypair.publicKey, associatedToken, wallet.publicKey, supply * LAMPORTS_PER_SOL, [], TOKEN_2022_PROGRAM_ID)
 );
-  const signature = await wallet.sendTransaction(transaction3, connection);
+
+  const {blockhash} = await connection.getLatestBlockhash();
+  transaction.recentBlockhash = blockhash;
+  transaction.feePayer = wallet.publicKey;
+
+  transaction.partialSign(mintKeypair)
+  const signature = await wallet.sendTransaction(transaction, connection);
   console.log(signature)
   return signature;
 };

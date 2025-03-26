@@ -133,15 +133,14 @@ export default function SendForm() {
 
           {success.current && (
             <div>
-              <h2>Transaction Successful</h2>
+              <h2 className="text-green-600">Transaction Successful</h2>
               <h2 className="font-semibold underline">
-                Link:{" "}
                 <a
                   href={`https://explorer.solana.com/tx/${sign.current}?cluster=devnet`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View Transaction
+                  Click To View The Transaction Details
                 </a>
               </h2>
             </div>
